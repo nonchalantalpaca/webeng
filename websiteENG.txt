@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HISTORY</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- 1. CORE VARIABLES --- */
+        :root {
+            --time-red: #E90606;
+            --black: #0e0e0e; 
+            --gray-dark: #333333;
+            --gray-light: #f2f2f2;
+            --border: #dcdcdc;
+            --serif: 'Playfair Display', serif;
+            --sans: 'Libre Franklin', sans-serif;
+            --condensed: 'Roboto Condensed', sans-serif;
+            --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --paper-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            --bg-color: #fcfcf8; 
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--sans);
+            color: var(--black);
+            background-color: var(--bg-color);
+            background-image: var(--paper-texture);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        a { text-decoration: none; color: inherit; cursor: pointer; transition: color 0.3s var(--ease); }
+        a:hover { color: var(--time-red); }
+        ul { list-style: none; }
+        img { width: 100%; display: block; object-fit: cover; transition: transform 0.6s var(--ease), opacity 0.3s; }
+
+        /* --- 2. GLOBAL ANIMATIONS --- */
+        .fade-in-up { animation: fadeInUp 0.6s var(--ease) forwards; opacity: 0; transform: translateY(30px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        .hover-zoom { overflow: hidden; display: block; }
+        .hover-zoom:hover img { transform: scale(1.05); opacity: 0.9; }
+
+        /* --- 3. HEADER --- */
+        .top-stripe { height: 4px; background: var(--time-red); position: fixed; top: 0; width: 100%; z-index: 9999; }
+        
+        .header-wrapper { 
+            position: fixed; top: 4px; width: 100%; z-index: 5000; border-bottom: 1px solid var(--black); height: 60px; display: flex; align-items: center; transition: box-shadow 0.3s; 
+            background-color: var(--bg-color);
+            background-image: var(--paper-texture);
+        }
+        .header-wrapper.scrolled { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .header-inner { max-width: 1400px; width: 100%; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 100px 1fr 100px; align-items: center; }
+        
+        .menu-btn { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px; transition: color 0.3s; }
+        .menu-btn:hover { color: var(--time-red); }
+        .burger-icon { width: 18px; height: 14px; display: flex; flex-direction: column; justify-content: space-between; }
+        .burger-line { width: 100%; height: 2px; background: var(--black); transition: 0.3s; }
+        .menu-btn:hover .burger-line { background: var(--time-red); }
+        
+        .logo { font-family: var(--serif); font-weight: 900; font-size: 2.5rem; letter-spacing: -1px; color: var(--time-red); line-height: 1; display: inline-block; cursor: pointer; transition: transform 0.3s; }
+        .logo:hover { transform: scale(1.02); }
+        
+        .btn-sub { background: var(--time-red); color: white; padding: 8px 16px; font-weight: 700; font-size: 0.7rem; border-radius: 2px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid var(--time-red); transition: 0.3s; cursor: pointer; }
+        .btn-sub:hover { background: white; color: var(--time-red); }
+
+        /* --- 4. NAVIGATION DRAWER --- */
+        .drawer-overlay {
+            position: fixed; top: 64px; left: 0; width: 100%; height: calc(100vh - 64px);
+            background: rgba(0,0,0,0.5); z-index: 4000; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(2px);
+        }
+        .drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+        .drawer {
+            position: fixed; top: 64px; left: 0; width: 100%; max-width: 1100px; height: calc(100vh - 64px);
+            z-index: 4001; transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            overflow-y: auto; box-shadow: 10px 0 20px rgba(0,0,0,0.1); border-right: 1px solid var(--black);
+             background-color: var(--bg-color);
+             background-image: var(--paper-texture);
+        }
+        .drawer.open { transform: translateX(0); }
+
+        .menu-grid { display: grid; grid-template-columns: 200px 1fr; gap: 40px; padding: 40px; }
+        .menu-list-col h4 { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .menu-list-col ul li { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; position: relative; left: 0; }
+        .menu-list-col ul li:hover { color: var(--time-red); left: 10px; }
+
+        .menu-visual-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .menu-card { cursor: pointer; group; }
+        .menu-card img { height: 140px; margin-bottom: 10px; filter: sepia(20%); } 
+        .menu-card-cat { color: var(--time-red); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .menu-card-title { font-family: var(--serif); font-weight: 700; font-size: 1rem; line-height: 1.3; transition: color 0.3s; }
+        .menu-card:hover .menu-card-title { color: var(--time-red); }
+
+        /* --- 5. MAIN CONTENT --- */
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Top Section - TIME.COM ALIGNMENT */
+        .top-section { display: grid; grid-template-columns: 220px 1fr 220px; gap: 40px; margin-top: 100px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+        
+        .side-story { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--border); cursor: pointer; text-align: left; }
+        .side-story:hover .headline { color: var(--time-red); }
+        .side-img { height: 140px; margin-bottom: 15px; filter: grayscale(20%); } 
+        
+        .hero-story { text-align: center; padding: 0 40px; border-left: 1px solid var(--border); border-right: 1px solid var(--border); cursor: pointer; }
+        .hero-img { height: 550px; width: 100%; margin-bottom: 25px; }
+        .hero-hl { font-size: 3.8rem; margin-bottom: 20px; letter-spacing: -2px; line-height: 1; transition: color 0.3s; }
+        .hero-story:hover .hero-hl { color: var(--time-red); }
+        
+        .hero-sum { font-size: 1.2rem; max-width: 700px; margin: 0 auto 20px; color: #333; line-height: 1.6; font-weight: 400; }
+
+        /* The Brief */
+        .brief-bar { 
+            background-color: #f4f4f0;
+            background-image: var(--paper-texture);
+            padding: 25px 0; border-bottom: 1px solid var(--border); border-top: 1px solid var(--border); display: flex; justify-content: center; gap: 40px; align-items: center; margin-bottom: 80px; 
+        }
+        .brief-item { display: flex; align-items: center; gap: 10px; font-family: var(--condensed); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; border: 1px solid var(--black); padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; background: var(--bg-color); }
+        .brief-item:hover { background: var(--black); color: white; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+        /* Wide Feature */
+        .wide-feature { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; margin: 80px 0; padding-bottom: 80px; border-bottom: 1px solid var(--border); cursor: pointer; }
+        .wide-text { display: flex; flex-direction: column; justify-content: center; }
+        .wide-hl { font-size: 3.5rem; margin-bottom: 20px; transition: color 0.3s; line-height: 1.1; }
+        .wide-feature:hover .wide-hl { color: var(--time-red); }
+        .wide-img { height: 600px; }
+
+        /* 4-Col Grid */
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-bottom: 100px; }
+        .grid-story { padding-right: 20px; border-right: 1px solid var(--border); cursor: pointer; }
+        .grid-story:last-child { border-right: none; }
+        .grid-story:hover .headline { color: var(--time-red); }
+        .grid-hl { font-size: 1.4rem; margin-bottom: 10px; font-weight: 700; }
+        .summary { font-size: 1.1rem; line-height: 1.6; color: #555; }
+
+        /* --- RESTORED SECTIONS FROM LONG SCROLL --- */
+        
+        .sec-title { font-family: var(--sans); font-weight: 900; font-size: 2rem; border-top: 4px solid var(--black); padding-top: 20px; margin: 80px 0 40px; text-transform: uppercase; letter-spacing: -1px; }
+
+        /* Video Section */
+        .video-section { background: #111; color: white; padding: 80px 0; margin: 80px 0; }
+        .vid-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+        .vid-main { position: relative; cursor: pointer; }
+        .vid-main img { height: 500px; opacity: 0.8; transition: 0.3s; filter: grayscale(50%); }
+        .vid-main:hover img { opacity: 1; }
+        .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; color: white; }
+        .vid-side-item { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 20px; cursor: pointer; }
+        .vid-side-img { width: 120px; height: 80px; filter: grayscale(50%); }
+
+        /* Opinion Section */
+        .opinion-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 50px; margin-bottom: 100px; }
+        .op-item { text-align: center; cursor: pointer; }
+        .op-auth-img { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 20px; filter: grayscale(100%); border: 3px solid var(--border); }
+        .op-quote { font-family: var(--serif); font-size: 1.8rem; font-style: italic; line-height: 1.3; margin-bottom: 15px; transition: 0.3s; }
+        .op-item:hover .op-quote { color: var(--time-red); }
+
+        /* --- FIXED BOTTOM SECTION --- */
+        .bottom-module { 
+            background-color: #f4f4f0; 
+            background-image: var(--paper-texture);
+            padding: 100px 0; border-top: 1px solid var(--black); margin-top: 100px; 
+        }
+        .covers-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; padding-bottom: 15px; border-bottom: 2px solid var(--black); }
+        .covers-title { font-family: var(--serif); font-size: 3.5rem; font-weight: 900; line-height: 1; }
+        .vault-link { font-family: var(--condensed); font-weight: 700; font-size: 0.9rem; color: var(--time-red); cursor: pointer; transition: 0.3s; }
+        .vault-link:hover { color: var(--black); letter-spacing: 1px; }
+        
+        .covers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px; }
+        .cover-card { text-align: center; cursor: pointer; transition: transform 0.3s; }
+        .cover-card:hover { transform: translateY(-15px); }
+        .cover-img { width: 100%; height: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2); margin-bottom: 30px; }
+        .cover-date { font-family: var(--condensed); font-weight: 700; color: #888; font-size: 0.9rem; text-transform: uppercase; }
+
+        /* Subscribe Banner */
+        .sub-banner { background: var(--time-red); color: white; padding: 80px; text-align: center; margin-top: 100px; background-image: var(--paper-texture); background-blend-mode: multiply; }
+        .sub-btn-large { background: var(--bg-color); color: var(--time-red); padding: 18px 50px; font-weight: 900; font-family: var(--condensed); text-transform: uppercase; border: none; cursor: pointer; margin-top: 25px; transition: 0.3s; display: inline-block; font-size: 1.1rem; }
+        .sub-btn-large:hover { background: var(--black); color: white; }
+
+        /* --- ARTICLE VIEW --- */
+        #article-view { display: none; margin-top: 80px; margin-bottom: 150px; }
+        
+        .article-hero { text-align: center; max-width: 900px; margin: 0 auto 80px; }
+        .article-hero h1 { font-family: var(--serif); font-size: 4.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 25px; letter-spacing: -1px; }
+        
+        .article-body { max-width: 740px; margin: 0 auto; font-family: 'Georgia', serif; font-size: 1.5rem; line-height: 2.0; color: #1a1a1a; text-align: left; }
+        .article-body p { margin-bottom: 50px; letter-spacing: 0.01em; }
+        .dropcap { float: left; font-size: 7rem; line-height: 0.7; font-weight: 900; font-family: var(--serif); margin: 12px 20px 0 0; color: var(--time-red); }
+        
+        .back-btn { display: inline-block; margin-bottom: 40px; font-family: var(--condensed); font-weight: 700; cursor: pointer; color: var(--time-red); transition: 0.3s; font-size: 1rem; letter-spacing: 1px; border-bottom: 2px solid transparent; }
+        .back-btn:hover { border-bottom-color: var(--time-red); color: var(--black); }
+
+        /* REFERENCES STYLES */
+        .ref-section { margin-bottom: 50px; border-bottom: 1px solid var(--border); padding-bottom: 30px; }
+        .ref-title { font-family: var(--sans); font-weight: 900; font-size: 1.8rem; margin-bottom: 20px; color: #111; border-left: 5px solid var(--time-red); padding-left: 20px; }
+        .ref-list li { margin-bottom: 20px; font-size: 1.2rem; font-family: 'Georgia', serif; }
+        .ref-list a { color: #333; text-decoration: none; border-bottom: 1px solid #ddd; transition: 0.2s; }
+        .ref-list a:hover { color: var(--time-red); border-bottom-color: var(--time-red); }
+
+        /* Footer */
+        footer { 
+            background: var(--black); color: white; padding: 100px 0; border-top: 4px solid var(--time-red); 
+            background-image: var(--paper-texture); background-blend-mode: soft-light;
+        }
+        .f-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 40px; }
+        .f-col h4 { color: #999; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; font-weight: 700; }
+        .f-col li { margin-bottom: 15px; font-size: 0.95rem; color: #ccc; cursor: pointer; transition: 0.3s; }
+        .f-col li:hover { color: white; transform: translateX(5px); }
+
+        @media(max-width: 1024px) {
+            .top-section, .wide-feature, .grid-4, .covers-grid, .vid-grid, .opinion-grid { grid-template-columns: 1fr; }
+            .hero-story { border: none; margin: 30px 0; }
+            .article-body { font-size: 1.2rem; padding: 0 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-stripe"></div>
+
+    <div class="header-wrapper" id="header">
+        <div class="header-inner">
+            <div class="menu-btn" onclick="toggleDrawer()">
+                <div class="burger-icon">
+                    <div class="burger-line"></div><div class="burger-line"></div><div class="burger-line"></div>
+                </div>
+                <span>SECTIONS</span>
+            </div>
+            <div class="logo-container" onclick="goHome()">
+                <span class="logo">HISTORY</span>
+            </div>
+            <div class="header-right">
+                <span class="btn-sub" onclick="alert('Subscribe')">SUBSCRIBE</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div class="menu-grid">
+            <div class="menu-list-col">
+                <h4>Categories</h4>
+                <ul>
+                    <li onclick="loadContent('chap_1'); toggleDrawer()">Politics</li>
+                    <li onclick="loadContent('chap_2'); toggleDrawer()">World</li>
+                    <li onclick="loadContent('chap_3'); toggleDrawer()">Business</li>
+                    <li onclick="loadContent('chap_4'); toggleDrawer()">Tech</li>
+                    <li onclick="loadContent('chap_5'); toggleDrawer()">Health</li>
+                    <li onclick="loadContent('chap_6'); toggleDrawer()">Climate</li>
+                    <li onclick="loadContent('chap_7'); toggleDrawer()">History</li>
+                    <li onclick="loadContent('references'); toggleDrawer()" style="color:var(--time-red);">References</li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 20px; font-weight: 800;">Featured Stories</h4>
+                <div class="menu-visual-grid">
+                    <div class="menu-card" onclick="loadContent('chap_1'); toggleDrawer()">
+                        <div class="hover-zoom"><img src="https://i0.wp.com/www.chicagoreporter.com/wp-content/uploads/2023/08/equal-rights-marchers.jpg?fit=780%2C526&ssl=1"></div>
+                        <span class="menu-card-cat">Politics</span>
+                        <div class="menu-card-title">Racial Ideology in the 1920s</div>
+                    </div>
+                    <div class="menu-card" onclick="loadContent('chap_4'); toggleDrawer()">
+                        <div class="hover-zoom"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPOxrrooAuuJXz6jY8eZQ4XHNj_8dBBqN_zQ&s"></div>
+                        <span class="menu-card-cat">Culture</span>
+                        <div class="menu-card-title">Resistance and Black Cultural Expression</div>
+                    </div>
+                    <div class="menu-card" onclick="loadContent('chap_6'); toggleDrawer()">
+                        <div class="hover-zoom"><img src="https://equitablegrowth.org/wp-content/uploads/2023/01/shutterstock_1891649683.jpg"></div>
+                        <span class="menu-card-cat">Business</span>
+                        <div class="menu-card-title">The Wealth Gap Explained</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="home-view">
+        <div class="container fade-in-up">
+            
+            <div class="top-section">
+                <div>
+                    <div class="side-story" onclick="loadContent('chap_1')">
+                        <div class="hover-zoom"><img src="https://i0.wp.com/www.chicagoreporter.com/wp-content/uploads/2023/08/equal-rights-marchers.jpg?fit=780%2C526&ssl=1" class="side-img"></div>
+                        <span class="rubric">Chapter I</span>
+                        <h3 class="headline side-hl">Racial Ideology in the 1920s</h3>
+                        <div class="byline">By Sarah J. Miller</div>
+                    </div>
+                    <div class="side-story" onclick="loadContent('chap_2')">
+                        <div class="hover-zoom"><img src="https://www.aclunorcal.org/app/uploads/2025/08/whites-only-bench-south-africa-600x400.jpg" class="side-img"></div>
+                        <span class="rubric">Chapter II</span>
+                        <h3 class="headline side-hl">White Supremacy and Pseudoscience</h3>
+                        <div class="byline">By Dr. Alisha Reynolds</div>
+                    </div>
+                </div>
+                <div class="hero-story" onclick="loadContent('home_intro')">
+                    <div class="hover-zoom"><img src="https://cdn.aaihs.org/wp-content/uploads/2020/08/Photo_1024px-_The_first_vote__-_AW_monogram__drawn_by_A.R._Waud._LCCN00651117-712x1024-1.jpg" class="hero-img"></div>
+                    <h1 class="headline hero-hl">Racial Ideology: The Echoes of 1920</h1>
+                    <p class="hero-sum">A special report on the comparative analysis of the American Dream, systemic barriers, and the enduring legacy of white supremacy from the Jazz Age to the modern digital era.</p>
+                    <div class="byline">BY SPECIAL REPORT TEAM</div>
+                </div>
+                <div>
+                    <div class="side-story" onclick="loadContent('chap_3')">
+                        <div class="hover-zoom"><img src="https://ichef.bbci.co.uk/news/480/cpsprodpb/15CF3/production/_97313398_kkk.jpg.webp" class="side-img"></div>
+                        <span class="rubric">Chapter III</span>
+                        <h3 class="headline side-hl">The Ku Klux Klan and Political Power</h3>
+                        <div class="byline">By David Chen</div>
+                    </div>
+                    <div class="side-story" onclick="loadContent('chap_4')">
+                        <div class="hover-zoom"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPOxrrooAuuJXz6jY8eZQ4XHNj_8dBBqN_zQ&s" class="side-img"></div>
+                        <span class="rubric">Chapter IV</span>
+                        <h3 class="headline side-hl">Resistance and Black Cultural Expression</h3>
+                        <div class="byline">By Elena Rodriguez</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="brief-bar">
+                <div class="brief-item" onclick="loadContent('brief')">The Brief</div>
+                <div class="brief-item" onclick="loadContent('view')">The View</div>
+                <div class="brief-item" onclick="loadContent('loop')">In The Loop</div>
+                <div class="brief-item" onclick="loadContent('inside')">Inside Time</div>
+            </div>
+
+            <div class="wide-feature" onclick="loadContent('chap_5')">
+                <div class="wide-text">
+                    <span class="rubric plain">Chapter V & VI</span>
+                    <h2 class="headline wide-hl">Racial Ideology in Modern America (2020s)</h2>
+                    <p class="hero-sum">In modern America, racism is less visible but still deeply embedded in systems. Laws now promote equality, but outcomes remain unequal.</p>
+                    <div class="rubric" style="margin-top:20px;">READ FULL CHAPTER</div>
+                </div>
+                <div class="hover-zoom"><img src="data:image/jpeg;base64,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" class="wide-img"></div>
+            </div>
+
+            <div class="grid-4">
+                <div class="grid-story" onclick="loadContent('chap_7')">
+                    <span class="rubric">Chapter VII</span>
+                    <h4 class="headline grid-hl">The American Dream: Myth vs. Reality</h4>
+                    <p class="summary">History shows this promise has never been equally available.</p>
+                </div>
+                <div class="grid-story" onclick="loadContent('chap_8')">
+                    <span class="rubric">Chapter VIII</span>
+                    <h4 class="headline grid-hl">Connection to The Great Gatsby</h4>
+                    <p class="summary">Tom Buchanan represents the racist and entitled upper class.</p>
+                </div>
+                <div class="grid-story" onclick="loadContent('chap_9')">
+                    <span class="rubric">Chapter IX</span>
+                    <h4 class="headline grid-hl">Why the Novel Still Matters Today</h4>
+                    <p class="summary">The systems it critiques still exist in new forms.</p>
+                </div>
+                <div class="grid-story" onclick="loadContent('chap_10')">
+                    <span class="rubric">Chapter X</span>
+                    <h4 class="headline grid-hl">Final Thoughts</h4>
+                    <p class="summary">Although society has changed, the core problems remain.</p>
+                </div>
+            </div>
+
+            <div class="sec-title">Must Read Stories</div>
+            <div class="grid-4">
+                <div class="grid-story" onclick="loadContent('chap_1')"><span class="rubric">History</span><h4 class="headline grid-hl">The Hidden History of 1924</h4></div>
+                <div class="grid-story" onclick="loadContent('chap_2')"><span class="rubric">Science</span><h4 class="headline grid-hl">Debunking Pseudoscience</h4></div>
+                <div class="grid-story" onclick="loadContent('chap_3')"><span class="rubric">Politics</span><h4 class="headline grid-hl">Power Dynamics Then & Now</h4></div>
+                <div class="grid-story" onclick="loadContent('chap_4')"><span class="rubric">Culture</span><h4 class="headline grid-hl">The Art of Resistance</h4></div>
+            </div>
+
+        </div>
+
+        <div class="video-section">
+            <div class="container">
+                <h3 style="font-family:var(--condensed); font-size:1.5rem; margin-bottom:30px; border-left:4px solid var(--time-red); padding-left:15px;">TIME VAULT</h3>
+                <div class="vid-grid">
+                    <div class="vid-main" onclick="loadContent('chap_1')">
+                        <img src="https://www.aljazeera.com/wp-content/uploads/2017/02/61ecacae2da84384b3a3814959250e40_18.jpeg?resize=770%2C513&quality=80">
+                        <i class="fas fa-play-circle play-icon"></i>
+                        <h2 class="headline" style="color:white; margin-top:20px; font-size:2rem;">Documentary: The Echoes of 1920</h2>
+                    </div>
+                    <div>
+                        <div class="vid-side-item" onclick="loadContent('chap_1')">
+                            <img src="https://cdn.aaihs.org/2016/03/image0-1.jpg" class="vid-side-img">
+                            <h4 class="headline" style="color:white; font-size:1rem;">Racial Ideology in the 1920s</h4>
+                        </div>
+                        <div class="vid-side-item" onclick="loadContent('chap_6')">
+                            <img src="https://equitablegrowth.org/wp-content/uploads/2023/01/shutterstock_1891649683.jpg" class="vid-side-img">
+                            <h4 class="headline" style="color:white; font-size:1rem;">Economy: The Wealth Gap</h4>
+                        </div>
+                        <div class="vid-side-item" onclick="loadContent('chap_7')">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCo4T0PWDzZTZKZHWu7_XDSm-oPG2UxLYCPg&s" class="vid-side-img">
+                            <h4 class="headline" style="color:white; font-size:1rem;">The American Dream: Myth vs. Reality</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="sec-title">Opinion & Ideas</div>
+            <div class="opinion-grid">
+                <div class="op-item" onclick="loadContent('view')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTirhpuOb4Oq8r4-eFkT30PZ3MkvzYkS4XOVA&s" class="op-auth-img">
+                    <div class="op-quote">Martin Luther King Jr.
+                        “Darkness cannot drive out darkness; only light can do that. Hate cannot drive out hate; only love can do that.”</div>
+                    <span class="rubric">Read Column</span>
+                </div>
+                <div class="op-item" onclick="loadContent('chap_10')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScI1HFmRWln852Vz91pME1lx0446jfxfkq4A&s" class="op-auth-img">
+                    <div class="op-quote">Angela Davis
+                        “In a racist society it is not enough to be non-racist, we must be anti-racist.”</div>
+                    <span class="rubric">Read Column</span>
+                </div>
+                <div class="op-item" onclick="loadContent('chap_8')">
+                    <img src="https://static01.nyt.com/images/2019/12/29/magazine/29mag-morrison/29mag-morrison-superJumbo-v3.jpg" class="op-auth-img">
+                    <div class="op-quote">Toni Morrison
+                        “The function of racism… is distraction. It keeps you from doing your work.”</div>
+                    <span class="rubric">Read Column</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-module">
+            <div class="container">
+                <div class="covers-header">
+                    <span class="covers-title">The Vault</span>
+                    <span class="vault-link">BROWSE ARCHIVES <i class="fas fa-arrow-right"></i></span>
+                </div>
+                <div class="covers-grid">
+                    <div class="cover-card" onclick="loadContent('chap_1')">
+                        <div class="hover-zoom"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYDB_yMjG6VJ6O3oE6f3PD0xoxqSCvWrPOLw&s" class="cover-img" style="filter:sepia(30%) contrast(1.2)"></div>
+                        <div class="cover-date">FEBRUARY 1920</div>
+                        <h4 class="headline" style="font-size:1.2rem; margin-top:10px;">The Roaring Twenties</h4>
+                    </div>
+                    <div class="cover-card" onclick="loadContent('chap_5')">
+                        <div class="hover-zoom"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEwYFLwbtf49qlTupu5pGgEADwOn_AHTyyhA&s" class="cover-img" style="filter:grayscale(100%) contrast(1.2)"></div>
+                        <div class="cover-date">AUGUST 1963</div>
+                        <h4 class="headline" style="font-size:1.2rem; margin-top:10px;">March on Washington</h4>
+                    </div>
+                    <div class="cover-card" onclick="loadContent('home_intro')">
+                        <div class="hover-zoom"><img src="https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?w=400" class="cover-img"></div>
+                        <div class="cover-date">FEBRUARY 2026</div>
+                        <h4 class="headline" style="font-size:1.2rem; margin-top:10px;">The Echoes of History</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sub-banner">
+                <h2 style="font-family: 'Playfair Display'; font-size: 2.5rem; margin-bottom: 10px;">Join the Conversation.</h2>
+                <p style="font-family: 'Libre Franklin'; font-size: 1.1rem; max-width: 600px; margin: 0 auto;">Get full access to TIME's journalism, including special reports, historical archives, and exclusive content.</p>
+                <button class="sub-btn-large">SUBSCRIBE NOW</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="article-view" class="container">
+        <div class="back-btn" onclick="goHome()"><i class="fas fa-arrow-left"></i> RETURN TO HOME</div>
+        <div id="article-content-target" class="fade-in-up"></div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div style="font-family:var(--serif); font-size:2rem; font-weight:900; margin-bottom:40px; text-align:center;">HISTORY</div>
+            <div class="f-grid">
+                <div class="f-col"><h4>Politics</h4><ul><li>Congress</li><li>White House</li><li>Judiciary</li></ul></div>
+                <div class="f-col"><h4>World</h4><ul><li>Europe</li><li>Middle East</li><li>Asia</li></ul></div>
+                <div class="f-col"><h4>Health</h4><ul><li>Medical</li><li>Mental Health</li><li>Wellness</li></ul></div>
+                <div class="f-col"><h4>Tech</h4><ul><li>Innovate</li><li>Gadgets</li><li>AI</li></ul></div>
+                <div class="f-col"><h4>Culture</h4><ul><li>Arts</li><li>History</li><li>Sports</li><li onclick="loadContent('references')" style="color:var(--time-red); font-weight:700;">References</li></ul></div>
+            </div>
+            <div style="text-align:center; margin-top:60px; font-size:0.8rem; color:#999;">© 2026 HISTORY EGYPT, LLC. All Rights Reserved. Use of this site constitutes acceptance of our Terms of Use and Privacy Policy.</div>
+        </div>
+    </footer>
+
+    <script>
+        window.onscroll = function() {
+            if (window.scrollY > 10) { document.getElementById('header').classList.add('scrolled'); } 
+            else { document.getElementById('header').classList.remove('scrolled'); }
+        };
+
+        const DB = {
+            'home_intro': {
+                headline: 'Racial Ideology: The Echoes of 1920',
+                body: `<p><span class="dropcap">T</span>he story of America is often told as a linear march toward progress. But when we examine the specific mechanics of racial ideology, the line becomes a circle. This special report investigates the parallels between two distinct eras of American history.</p>
+                <p>Racial ideology in the 1920s was deeply rooted in the belief that white Americans were superior and therefore entitled to control society. This belief influenced nearly every part of daily life, shaping laws, education systems, job opportunities, and social behavior. It was not hidden or questioned—instead, it was widely accepted and enforced by those in power.</p>
+                <p>Jim Crow laws legalized segregation and turned racial inequality into a permanent feature of American life. Black Americans were forced into separate schools, neighborhoods, and public spaces that were consistently underfunded, overcrowded, and neglected. These conditions were intentionally created to maintain a racial hierarchy and remind Black communities of their assigned place in society.</p>
+                <p>Beyond physical separation, racial ideology worked to limit opportunity and silence Black voices. Voting restrictions such as poll taxes, literacy tests, and intimidation prevented many Black citizens from participating in government. This allowed discriminatory policies to continue without opposition and ensured that power remained in white hands.</p>
+                <p>This special report investigates the parallels between two distinct eras of American history, examining how the racial beliefs of the 1920s continue to echo through modern institutions and attitudes. By comparing past and present, the report highlights how ideas once defended as tradition have left lasting impacts on inequality, representation, and social justice today.</p>`
+            },
+            'chap_1': {
+                headline: 'I. Racial Ideology in the 1920s',
+                body: `<p><span class="dropcap">R</span>acial ideology in the 1920s was deeply rooted in the belief that white Americans were superior and therefore deserved control over society. This idea shaped nearly every aspect of life, from laws and education to employment and social behavior. Jim Crow laws enforced segregation and made racial inequality legal, forcing Black Americans into separate schools, neighborhoods, and public spaces that were always worse than those reserved for white citizens.</p>
+                <p>These laws were designed not just to separate races but to limit opportunity, ensuring that Black Americans remained politically powerless and economically dependent. Voting restrictions such as poll taxes and literacy tests removed Black voices from government, allowing racist policies to continue unchallenged. Racism was not hidden or controversial during this time; it was openly supported by institutions and defended as tradition.</p>
+                <p>Racial ideology in the 1920s was built on the widespread belief that white Americans were naturally superior and therefore entitled to control political, economic, and social life. This belief was not fringe or extreme—it was treated as common sense and reinforced through law, education, media, and everyday customs. Racism shaped how society functioned and determined who had power and who did not.</p>
+                <p>Jim Crow laws legalized segregation across the United States, especially in the South, forcing Black Americans into separate schools, neighborhoods, transportation, and public spaces. These facilities were consistently underfunded, overcrowded, and neglected, making inequality a daily reality. Segregation sent a clear message: Black Americans were considered second-class citizens, unworthy of equal treatment or opportunity.</p>
+                <p>Overall, racial ideology in the 1920s was not just a set of beliefs—it was a system. It shaped laws, limited freedom, and maintained white dominance while denying Black Americans equality, dignity, and basic rights.</p>`
+            },
+            'chap_2': {
+                headline: 'II. White Supremacy and Pseudoscience',
+                body: `<p><span class="dropcap">W</span>hite supremacy in the 1920s was reinforced by pseudoscience that attempted to prove racial hierarchy through biology. Many scientists and scholars claimed that intelligence, morality, and leadership ability were determined by race, presenting white dominance as natural and inevitable.</p>
+                <p>These false ideas were taught in schools, published in academic journals, and discussed in public discourse, giving them credibility. By framing racism as science, society was able to justify inequality without guilt. Poverty and lack of opportunity among non-white groups were blamed on genetics instead of unfair systems.</p>
+                <p>This thinking supported the eugenics movement, which argued that society should control reproduction to prevent “undesirable” traits. Immigration laws were also shaped by these beliefs, favoring Europeans while restricting others. Pseudoscience allowed discrimination to appear logical and responsible, protecting existing power structures and discouraging challenges to inequality.</p>
+                <p>White supremacy in the 1920s was strongly reinforced by pseudoscience, which attempted to present racial hierarchy as a biological fact rather than a social construction. Many scientists, academics, and public intellectuals claimed that traits such as intelligence, morality, leadership ability, and even work ethic were determined by race. These claims framed white dominance as natural, inevitable, and scientifically proven, rather than as the result of power and history.</p>
+                <p>These false ideas were not limited to extremist groups—they were taught in schools, published in academic journals, and discussed openly in newspapers and public lectures. Because they came from people labeled as “experts,” pseudoscientific racism gained legitimacy and widespread acceptance. Charts, measurements, and distorted data were used to give the illusion of objectivity, even though the conclusions were deeply biased and unsupported.</p>`
+            },
+            'chap_3': {
+                headline: 'III. The Ku Klux Klan and Political Power',
+                body: `<p><span class="dropcap">T</span>he Ku Klux Klan became one of the most powerful organizations in the 1920s, showing how racism moved beyond personal belief and into political control. The KKK was not operating in secret; it was openly supported by millions of Americans, including politicians, judges, police officers, and business leaders.</p>
+                <p>This widespread support allowed the Klan to influence elections and shape laws that reinforced segregation and discrimination. The group claimed it was defending American values, religion, and tradition, but in reality, it relied on fear and violence to maintain white dominance.</p>
+                <p>Millions of Americans supported the Klan, including politicians, judges, police officers, and business leaders. In many states, Klan members held public office or had close ties to those in power. This gave the organization enormous influence over local and national politics, allowing it to shape elections and push laws that enforced segregation, voter suppression, and discrimination against Black Americans, immigrants, Catholics, Jews, and anyone they labeled as “un-American.”</p>
+                <p>The rise of the Klan in the 1920s demonstrates how deeply racism was rooted in American political and social structures, reinforcing inequality not just through attitudes, but through power and policy.</p>`
+            },
+            'chap_4': {
+                headline: 'IV. Resistance and Black Cultural Expression',
+                body: `<p><span class="dropcap">D</span>espite intense oppression, Black Americans resisted racism through culture, creativity, and community. The Harlem Renaissance allowed Black writers, artists, and musicians to express pride in their identity and challenge racist stereotypes. Through poetry, novels, and music, Black creators showed intelligence, emotional depth, and artistic excellence that contradicted ideas of inferiority.</p>
+                <p>Jazz music became a symbol of freedom and self-expression, spreading Black culture across the country. These cultural achievements helped reshape how Black life was portrayed, even if laws and institutions remained oppressive. However, this resistance had limits. Black culture was often celebrated for entertainment while Black people themselves were denied basic rights.</p>
+                <p>Visual artists also played a major role by creating paintings and sculptures that portrayed Black people with dignity and strength. These images challenged degrading portrayals that had dominated mainstream culture and replaced them with representations rooted in pride and realism. Art became a way to reclaim identity and rewrite narratives that society had long distorted.</p>
+                <p>Overall, Black cultural expression during this time was not just entertainment—it was resistance. Through literature, art, music, and community, Black Americans asserted their humanity, demanded recognition, and laid the groundwork for future civil rights movements, proving that creativity could be a powerful force against oppression.</p>`
+            },
+            'chap_5': {
+                headline: 'V. Racial Ideology in Modern America (2020s)',
+                body: `<p><span class="dropcap">I</span>n modern America, racism is no longer openly supported by law, but its effects remain through systemic inequality. Segregation is illegal, and most people agree that racism is wrong, yet unequal outcomes persist in education, housing, healthcare, and employment.</p>
+                <p>In modern America, racism is no longer openly supported by law, and segregation is officially illegal. Most people agree that racism is morally wrong, and public language has shifted toward equality and inclusion. However, the effects of past racial ideology continue to shape society through systemic inequality, meaning unfair outcomes are built into institutions rather than written into law.</p>
+                <p>Unequal results are still visible in education, housing, healthcare, and employment. Schools in historically marginalized communities are often underfunded, overcrowded, and lack access to resources, which limits students’ opportunities from an early age. Housing patterns shaped by past discrimination, such as redlining, continue to affect where people live, the quality of neighborhoods, and access to wealth-building opportunities like home ownership.</p>
+                <p>Modern racism is harder to confront because it does not rely on obvious language, segregation signs, or openly discriminatory laws. Instead, it appears through policies that seem neutral but produce unequal outcomes. Because it is less visible, it is often denied or misunderstood, making meaningful change more difficult.</p>`
+            },
+            'chap_6': { 
+                headline: 'VI. Wealth, Opportunity, and Social Mobility', 
+                body: `<p><span class="dropcap">W</span>ealth plays a major role in determining success, and race has historically shaped who can accumulate it. In the 1920s, Black Americans were denied access to loans, property ownership, and business opportunities, preventing families from building financial security. These barriers created long-term disadvantages that did not disappear when laws changed.</p>
+                <p>Today, families with generational wealth can afford better education, safer neighborhoods, and financial safety nets. Others must work harder just to survive, often without support. This creates unequal starting points that limit social mobility.</p>
+                <p>The idea that success is based only on effort ignores these realities. While hard work matters, access to opportunity matters just as much. Without equal access, inequality continues across generations.</p>` 
+            },
+            'chap_7': { 
+                headline: 'VII. The American Dream: Myth vs. Reality', 
+                body: `<p><span class="dropcap">T</span>he American Dream promises that anyone can succeed through hard work, but history shows this promise has never been equally available. In the 1920s, the dream was largely reserved for white Americans, while racism blocked others from opportunity. Laws and social norms made upward mobility unrealistic for non-white groups, regardless of effort.</p>
+                <p>Today, the dream is more inclusive in theory but still unequal in practice. Rising costs, unequal education, and systemic barriers make success harder for some than others. The dream motivates people to keep striving, but it also hides inequality by framing failure as a personal problem rather than a structural one.</p>
+                <p>This gap between promise and reality reveals the American Dream as an ideal that often ignores injustice.</p>` 
+            },
+            'chap_8': { 
+                headline: 'VIII. Connection to The Great Gatsby', 
+                body: `<p><span class="dropcap">T</span>he Great Gatsby reflects the racial and social inequalities of the 1920s by exposing how power and wealth are protected by the elite. Tom Buchanan represents the racist and entitled upper class that believes control belongs to them. His fear of losing power mirrors real racial anxieties of the era.</p>
+                <p>Gatsby’s story shows that wealth alone is not enough to achieve acceptance or equality. Despite his success, he is still viewed as an outsider. This proves that background, status, and power matter more than effort. The novel reveals the American Dream as selective and controlled by those already at the top.</p>
+                <p>Tom Buchanan represents the entitled upper class that believes dominance is their natural right. His openly racist views and obsession with “old stock” superiority reflect real racial ideologies of the era, where whiteness, wealth, and lineage were used to justify power. Tom’s fear of losing status mirrors the broader anxieties of the 1920s, when social and racial hierarchies were being challenged by cultural change, immigration, and Black advancement. His aggression and arrogance show how the elite respond to this fear—not with adaptation, but with control and hostility.</p>` 
+            },
+            'chap_9': { 
+                headline: 'IX. Why the Novel Still Matters Today', 
+                body: `<p><span class="dropcap">T</span>he novel remains relevant because the systems it critiques still exist. Wealth is often inherited, power is protected, and inequality is disguised as personal failure. Just like in the 1920s, those at the top benefit most from the system.</p>
+                <p>The story forces readers to question whether success is truly fair or designed to maintain hierarchy. It exposes how progress can exist alongside injustice. This makes the novel meaningful even in modern society.</p>
+                <p>The novel remains powerful because it exposes systems that continue to shape modern society. Wealth is still concentrated among a small group, often passed down through generations, while others are told that success is purely the result of effort. This mirrors the world of the novel, where privilege, family name, and social connections matter far more than hard work or ambition. The idea that everyone has an equal chance is presented as truth, yet the outcomes tell a very different story.</p>` 
+            },
+            'chap_10': { 
+                headline: 'X. Final Thoughts', 
+                body: `<p><span class="dropcap">A</span>lthough society has changed, the core problems remain. Racism has evolved rather than disappeared, shifting from open laws to systemic barriers. What has shifted is not the existence of racism, but the way it operates. In the past, discrimination was enforced through clear laws, segregation signs, and openly racist language. Today, those same beliefs often exist beneath the surface, embedded within systems that appear neutral but continue to produce unequal outcomes.</p>
+                <p>Racism has evolved rather than disappeared, moving from explicit rules to systemic barriers that affect education, housing, employment, healthcare, and political power. Because these barriers are less obvious, they are easier to deny and harder to challenge. This makes modern racism especially dangerous, as it can persist without being recognized or addressed.</p>
+                <p>Understanding this evolution is essential. By recognizing the connections between past racial ideology and present inequalities, society can move beyond the idea that racism is “over” and instead confront how history continues to shape opportunity. Real progress requires more than changing laws—it requires acknowledging systemic injustice and actively working to dismantle it.</p>` 
+            },
+            'brief': { 
+                headline: 'The Brief: Daily Headlines', 
+                body: `<p><span class="dropcap">T</span>oday's top stories focus on the intersection of history and modern policy. As Congress debates the new Voting Rights Act, historians are drawing parallels to the 1924 restrictions that disenfranchised millions. In other news, tech giants are facing scrutiny over algorithmic bias, a modern echo of the systemic exclusions of the 20th century. Stay informed with our daily rundown of the stories that matter most.</p>`
+            },
+            'view': { 
+                headline: 'The View: Opinion & Analysis', 
+                body: `<p><span class="dropcap">W</span>hy does the past refuse to stay in the past? Our editors argue that without a comprehensive truth and reconciliation process regarding the Jim Crow era, American society cannot fully heal. This week's opinion column explores the "Invisible Laws" of 2026—social norms that enforce separation just as effectively as the statutes of 1920 did. A must-read for understanding the cultural undertow of our times.</p>`
+            },
+            'loop': { 
+                headline: 'In The Loop: Policy Watch', 
+                body: `<p><span class="dropcap">W</span>ashington insiders are buzzing about the new "Heritage Bill" proposed in the Senate. Proponents say it protects history; opponents argue it whitewashes the brutal reality of the 1920s. We take you inside the committee rooms where the definitions of "American History" are being rewritten. Plus, a look at how local school boards are becoming the new battleground for racial ideology.</p>`
+            },
+            'inside': { 
+                headline: 'Inside Time: Behind the Story', 
+                body: `<p><span class="dropcap">H</span>ow do you reconstruct the mindset of a century ago? Our special report team spent six months digging through the TIME archives, accessing original letters, unpublished drafts, and internal memos from the 1920s. This exclusive look behind the scenes reveals how we built "The Echoes of 1920" and the surprising discoveries we made along the way about our own publication's history.</p>`
+            },
+            'politics': { headline: 'Politics', body: '<p>Latest political news...</p>' },
+            'world': { headline: 'World', body: '<p>Global news...</p>' },
+            'health': { headline: 'Health', body: '<p>Health updates...</p>' },
+            'tech': { headline: 'Tech', body: '<p>Technology news...</p>' },
+            'business': { headline: 'Business', body: '<p>Business insights...</p>' },
+            'entertainment': { headline: 'Entertainment', body: '<p>Culture and Arts...</p>' },
+            'history': { headline: 'History', body: '<p>Historical archives...</p>' },
+            
+            // --- REFERENCES ---
+            'references': {
+                headline: 'References & Bibliography',
+                body: `
+                    <div class="ref-section">
+                        <div class="ref-title">📜 1920s Historical Context & Racism</div>
+                        <ul class="ref-list">
+                            <li><a href="https://www.history.com/topics/early-20th-century-us/jim-crow-laws" target="_blank">History.com — Jim Crow laws and their impact on early 20th-century America</a></li>
+                            <li><a href="https://americainclass.org/sources/becomingmodern/divisions/text1/text1.htm" target="_blank">National Humanities Center — Ku Klux Klan in the 1920s history and primary sources</a></li>
+                            <li><a href="https://cnu.libguides.com/1920s/race" target="_blank">Primary sources on race and ethnicity in the 1920s</a></li>
+                            <li><a href="http://cdr.lib.unc.edu" target="_blank">Research on racist laws like the Racial Integrity Act (UNC)</a></li>
+                            <li><a href="https://press.uchicago.edu/ucp/books/book/chicago/K/bo23720308.html" target="_blank">Ku Klux Kulture: America and the Klan in the 1920s (Book Excerpt)</a></li>
+                            <li><a href="https://www.loc.gov/classroom-materials/jim-crow-segregation/" target="_blank">Library of Congress: Jim Crow and Segregation</a></li>
+                            <li><a href="https://nmaahc.si.edu/explore/stories/jim-crow-laws" target="_blank">Smithsonian NMAAHC: Jim Crow Era</a></li>
+                            <li><a href="https://www.pbs.org/wgbh/americanexperience/features/freedom-riders-jim-crow-laws/" target="_blank">PBS: Jim Crow Laws and Racial Segregation</a></li>
+                            <li><a href="https://www.naacp.org/find-resources/history-explained/" target="_blank">NAACP: History Explained: Race and Racism in America</a></li>
+                            <li><a href="https://www.loc.gov/collections/great-migration/about-this-collection/" target="_blank">Library of Congress: The Great Migration and Race in the 1920s</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="ref-section">
+                        <div class="ref-title">📊 Modern Structural Racism & Inequality</div>
+                        <ul class="ref-list">
+                            <li><a href="https://www.apha.org/policy-and-advocacy/public-health-policy-briefs/policy-database/2021/01/13/structural-racism-is-a-public-health-crisis" target="_blank">APHA — Structural racism explained and how systems create racial disparities</a></li>
+                            <li><a href="https://www.ama-assn.org/public-health/health-equity/what-structural-racism" target="_blank">AMA — What structural racism is and how it impacts society</a></li>
+                            <li><a href="https://arxiv.org/abs/2109.12491" target="_blank">Research using police presence and racial disparities (ArXiv)</a></li>
+                            <li><a href="https://www.cambridge.org/core/journals/journal-of-race-ethnicity-and-politics/article/american-dream-versus-american-reality-how-information-about-structural-racism-can-prompt-support-for-racebased-policies/FD6CF58A73C34772E3492A00DE61DB02" target="_blank">Cambridge University Press — American Dream versus American Reality</a></li>
+                            <li><a href="https://www.pewresearch.org/social-trends/2019/04/09/views-of-racial-inequality/" target="_blank">Pew Research Center: Views on Racial Inequality in America</a></li>
+                            <li><a href="https://www.brookings.edu/topics/race-in-america/" target="_blank">Brookings Institution: Race, Inequality, and Opportunity</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="ref-section">
+                        <div class="ref-title">📚 Literature</div>
+                        <ul class="ref-list">
+                            <li>Fitzgerald, F. Scott. <em>The Great Gatsby</em>. Charles Scribner’s Sons, 1925.</li>
+                        </ul>
+                    </div>
+                `
+            }
+        };
+
+        function loadContent(id) {
+            const data = DB[id] || DB['home_intro']; 
+            const view = document.getElementById('article-view');
+            const home = document.getElementById('home-view');
+            const target = document.getElementById('article-content-target');
+
+            window.scrollTo(0,0);
+            home.style.display = 'none';
+            view.style.display = 'block';
+
+            target.classList.remove('fade-in-up');
+            void target.offsetWidth; 
+            target.classList.add('fade-in-up');
+
+            target.innerHTML = `
+                <div class="article-hero">
+                    <span class="rubric">Special Report</span>
+                    <h1 class="headline" style="font-size:3rem; margin:15px 0;">${data.headline}</h1>
+                </div>
+                <div class="article-body">
+                    ${data.body}
+                </div>
+            `;
+        }
+
+        function goHome() {
+            document.getElementById('article-view').style.display = 'none';
+            document.getElementById('home-view').style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        function toggleDrawer() {
+            document.getElementById('drawer').classList.toggle('open');
+            document.getElementById('drawerOverlay').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
